@@ -1,0 +1,47 @@
+---
+title: "Bisamdetektion"
+# output: html_document
+output:
+  flexdashboard::flex_dashboard:
+    theme:
+      # united
+      # simplex
+      # yeti
+      # readable:
+        primary:
+          "#144836"
+    logo:
+      # naturhistoriska-riksmuseet2.png
+      # nrm-logo-liggande-svensk-negativ.png
+      nrm-logo.svg
+      
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE}
+library(flexdashboard)
+library(leaflet)
+
+bisamData <- data.frame(Sample = paste0(LETTERS[1:4], 1:4), Lattitude = c(59.38922707244422, 59.40670467084389, 59.4231253955455, 59.28750377236695), Longitude = c(17.9626577586649, 18.20916347794304, 17.80335601250187, 18.166248136843084), Result = c("positiv", "negativ", "positiv", "negativ"))
+```
+
+```{r echo=FALSE}
+colorByResult <- colorFactor(palette = c("darkgreen", "red", "orange"), domain = c("positiv", "negativ", "okänd"), ordered = TRUE)
+
+counts_html <- paste0(
+  '<div style="background:white; padding:10px;">',
+  'Antal positiva prover: <span style="float:right; font-weight:bold"> ', sum(bisamData$Result == "positiv", na.rm = TRUE), "</span><br>",
+  'Antal negativa prover: <span style="float:right; font-weight:bold"> ', sum(bisamData$Result == "negativ", na.rm = TRUE), "</span>"
+)
+
+leaflet::leaflet(bisamData) %>%
+  leaflet::addTiles() %>%
+  # leaflet::addMarkers(lng = ~ Longitude, lat = ~ Lattitude, label = ~ Sample) %>%
+  leaflet::addCircleMarkers(lng = ~ Longitude, lat = ~ Lattitude, label = ~ Sample, popup = ~ paste0("<b>", Sample, "</b>: ", Result), color = ~ colorByResult(Result)) %>%
+  leaflet::addLegend(values = ~ Result, pal = colorByResult, title = "Resultat") %>%
+  leaflet::addControl(html = counts_html, position = "bottomright")
+```
+
