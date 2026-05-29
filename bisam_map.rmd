@@ -25,7 +25,10 @@ knitr::opts_chunk$set(echo = TRUE)
 library(flexdashboard)
 library(leaflet)
 
-bisamData <- data.frame(Sample = paste0(LETTERS[1:4], 1:4), Lattitude = c(59.38922707244422, 59.40670467084389, 59.4231253955455, 59.28750377236695), Longitude = c(17.9626577586649, 18.20916347794304, 17.80335601250187, 18.166248136843084), Result = c("positiv", "negativ", "positiv", "negativ"))
+# bisamData <- data.frame(Sample = paste0(LETTERS[1:4], 1:4), Lattitude = c(59.38922707244422, 59.40670467084389, 59.4231253955455, 59.28750377236695), Longitude = c(17.9626577586649, 18.20916347794304, 17.80335601250187, 18.166248136843084), Result = c("positiv", "negativ", "positiv", "negativ"))
+bisamData <- readxl::read_xlsx("map_data.xlsx")
+bisamData$Latitude <- as.numeric(bisamData$Latitude)
+bisamData$Longitude <- as.numeric(bisamData$Longitude)
 ```
 
 ```{r echo=FALSE}
@@ -40,7 +43,7 @@ counts_html <- paste0(
 leaflet::leaflet(bisamData) %>%
   leaflet::addTiles() %>%
   # leaflet::addMarkers(lng = ~ Longitude, lat = ~ Lattitude, label = ~ Sample) %>%
-  leaflet::addCircleMarkers(lng = ~ Longitude, lat = ~ Lattitude, label = ~ Sample, popup = ~ paste0("<b>", Sample, "</b>: ", Result), color = ~ colorByResult(Result)) %>%
+  leaflet::addCircleMarkers(lng = ~ Longitude, lat = ~ Latitude, label = ~ Sample, popup = ~ paste0("<b>", Sample, "</b>: ", Result), color = ~ colorByResult(Result)) %>%
   leaflet::addLegend(values = ~ Result, pal = colorByResult, title = "Resultat") %>%
   leaflet::addControl(html = counts_html, position = "bottomright")
 ```
