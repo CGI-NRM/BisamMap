@@ -43,7 +43,7 @@ counts_html <- paste0(
 leaflet::leaflet(bisamData) %>%
   leaflet::addTiles() %>%
   # leaflet::addMarkers(lng = ~ Longitude, lat = ~ Lattitude, label = ~ Sample) %>%
-  leaflet::addCircleMarkers(lng = ~ Longitude, lat = ~ Latitude, label = ~ Sample, popup = ~ paste0("<b>", Sample, "</b>: ", Result), color = ~ colorByResult(Result)) %>%
+  leaflet::addCircleMarkers(lng = ~ Longitude, lat = ~ Latitude, label = ~ Sample, popup = ~ paste0("<b>", Sample, "</b>: ", Result, " ", Details), color = ~ colorByResult(Result)) %>%
   leaflet::addLegend(values = ~ Result, pal = colorByResult, title = "Resultat") %>%
   leaflet::addControl(html = counts_html, position = "bottomright")
 ```
