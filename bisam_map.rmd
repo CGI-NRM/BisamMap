@@ -3,6 +3,8 @@ title: "Bisamdetektion"
 # output: html_document
 output:
   flexdashboard::flex_dashboard:
+    # orientation: columns
+    # vertical_layout: scroll
     theme:
       # united
       # simplex
@@ -29,15 +31,28 @@ library(leaflet)
 library(DT)
 library(htmltools)
 
-# bisamData <- data.frame(Prov = paste0(LETTERS[1:4], 1:4), Lattitude = c(59.38922707244422, 59.40670467084389, 59.4231253955455, 59.28750377236695), Longitude = c(17.9626577586649, 18.20916347794304, 17.80335601250187, 18.166248136843084), Resultat = c("positiv", "negativ", "positiv", "negativ"))
 bisamData <- readxl::read_xlsx("map_data.xlsx")
 bisamData$Latitude <- as.numeric(bisamData$Latitude)
 bisamData$Longitude <- as.numeric(bisamData$Longitude)
 ```
 
-Column {data-width=600}
---------------------------------------------------------------------------------
+```{css include=FALSE}
+<!-- Max out table -->
+.dataTables_wrapper {
+    display: inline-block !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    flex-shrink: 0 !important;
+}
 
+.htmlwidget, .leaflet {
+    flex-grow: 1 !important;
+    width: 100% !important;
+}
+```
+
+<!-- Column {data-width=600} -->
+--------------------------------------------------------------------------------
 ### 
 ```{r echo=FALSE}
 colorByResultat <- colorFactor(palette = c("darkgreen", "red", "orange"), domain = c("positiv", "negativ", "okänd"), ordered = TRUE)
@@ -51,7 +66,6 @@ counts_html <- paste0(
 leaflet::leaflet(bisamData, elementId = "myMap") %>%
   leaflet::addTiles() %>%
   # leaflet::addMarkers(lng = ~ Longitude, lat = ~ Lattitude, label = ~ Prov) %>%
-  # leaflet::addCircleMarkers(lng = ~ Longitude, lat = ~ Latitude, label = ~ Prov, popup = ~ paste0("<b>", Prov, "</b>: ", Resultat, " ", Replikat), color = ~ colorByResultat(Resultat)) %>%
   leaflet::addCircleMarkers(lng = ~ Longitude, lat = ~ Latitude, popup = ~ paste0("<b>", Prov, "</b>: ", Resultat, " ", Replikat), color = ~ colorByResultat(Resultat)) %>%
   leaflet::addLegend(values = ~ Resultat, pal = colorByResultat, title = "Resultat") %>%
   leaflet::addControl(html = counts_html, position = "bottomright")%>%
@@ -62,18 +76,10 @@ leaflet::leaflet(bisamData, elementId = "myMap") %>%
   ") # expose the map globally
 ```
 
-Column {data-width=130}
+Column {data-width=100%}
 --------------------------------------------------------------------------------
 ### 
 ```{r echo=FALSE}
-# DT::datatable(data = bisamData, extensions = "Select", selection = "none", rownames = FALSE, options = list(pageLength = 100, 
-#     autoWidth = TRUE,
-#     select = list(style = 'os', items = 'row'),
-#     dom = "t",
-#     columnDefs = list(list(visible = FALSE, targets = c(1, 2, 4)))
-#   ), elementId = "myTable"
-#   )
-
 DT::datatable(
   data = bisamData, 
   rownames = FALSE, 
