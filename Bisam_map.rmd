@@ -5,13 +5,13 @@ output:
   flexdashboard::flex_dashboard:
     # orientation: columns
     # vertical_layout: scroll
-    theme:
+    theme: # comment this
       # united
       # simplex
       # yeti
       # readable:
-        primary:
-          "#144836"
+        primary: # this
+          "#144836" # and this in order to fix alignment?
     logo:
       # naturhistoriska-riksmuseet2.png
       # nrm-logo-liggande-svensk-negativ.png
@@ -36,6 +36,19 @@ bisamData$Latitude <- as.numeric(bisamData$Latitude)
 bisamData$Longitude <- as.numeric(bisamData$Longitude)
 ```
 
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+### Filtrera prover
+```{r echo=FALSE}
+library(crosstalk)
+bisamData <- SharedData$new(bisamData)
+filter_checkbox("cat_filter", "Resultat", bisamData, ~Resultat)
+filter_checkbox("cat_filter", "Antal positiva replikat", bisamData, ~Replikat)
+filter_checkbox("cat_filter", "Provomgång", bisamData, ~Provomgång)
+# filter_slider("val_slider", "Value Range", shared_data, ~Value)
+
+```
+
 ```{css include=FALSE}
 <!-- Max out table -->
 .dataTables_wrapper {
@@ -52,7 +65,7 @@ bisamData$Longitude <- as.numeric(bisamData$Longitude)
 ```
 
 <!-- Column {data-width=600} -->
---------------------------------------------------------------------------------
+-----------------------------------------------------------------------
 ### 
 ```{r echo=FALSE}
 colorByResultat <- colorFactor(palette = c("darkgreen", "red", "orange"), domain = c("positiv", "negativ", "okänd"), ordered = TRUE)
@@ -77,15 +90,17 @@ leaflet::leaflet(bisamData, elementId = "myMap") %>%
 ```
 
 Column {data-width=100%}
---------------------------------------------------------------------------------
+-----------------------------------------------------------------------
 ### 
 ```{r echo=FALSE}
 DT::datatable(
   data = bisamData, 
+  selection = "none", # Turns off native DT table highlights 
   rownames = FALSE, 
   options = list(
     pageLength = 100, 
-    dom = "t",
+    dom = "t", # add search box?
+    # selection = "none",
     autoWidth = TRUE,
     columnDefs = list(list(visible = FALSE, targets = c(1, 2))),
     rowCallback = JS("
